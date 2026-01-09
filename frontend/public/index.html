@@ -10,6 +10,22 @@
     body { font-family: 'Poppins', system-ui, -apple-system, sans-serif; }
     .badge { padding: 4px 10px; border-radius: 9999px; font-weight: 600; font-size: 12px; }
     .card-shadow { box-shadow: 0 6px 18px rgba(49, 46, 129, 0.08); }
+
+    /* Feature-specific bars */
+    .feature-bar { display:flex; align-items:center; gap:0.75rem; }
+    .feature-bar.hidden { display:none; }
+    .feature-bar .progress { width: 0%; transition: width 0.25s ease; }
+    .feature-bar .progress.indeterminate { animation: indeterminate 1.2s linear infinite; }
+    @keyframes indeterminate {
+      0% { transform: translateX(-30%); width: 30%; }
+      50% { transform: translateX(20%); width: 50%; }
+      100% { transform: translateX(100%); width: 70%; }
+    }
+
+    /* Top nav small polish */
+    #top-nav button { transition: background-color .15s, color .15s, transform .08s; }
+    #top-nav button[aria-current="page"] { font-weight: 700; }
+
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-900">
@@ -25,6 +41,13 @@
         </div>
       </div>
       <div class="flex items-center gap-3">
+        <!-- Top-right feature navigation -->
+        <div id="top-nav" class="hidden md:flex items-center gap-2">
+          <button id="nav-products" class="px-3 py-1 rounded text-sm text-gray-700 hover:bg-indigo-50">Produk</button>
+          <button id="nav-transactions" class="px-3 py-1 rounded text-sm text-gray-700 hover:bg-indigo-50">Transaksi</button>
+          <button id="nav-dashboard" class="px-3 py-1 rounded text-sm text-gray-700 hover:bg-indigo-50">Dashboard</button>
+        </div>
+
         <div id="user-info" class="text-sm text-gray-700 hidden">
           <span id="user-name" class="font-medium"></span>
           <button id="btn-logout" class="ml-3 text-xs text-red-600 hover:underline">Logout</button>
@@ -109,6 +132,7 @@
       </div>
     </section>
     <!-- Produk -->
+    <div id="page-products">
     <section class="bg-white rounded-lg shadow p-6 space-y-4">
       <div class="flex items-center justify-between">
         <div>
@@ -118,6 +142,12 @@
         <button id="btn-refresh-products" class="px-3 py-2 text-sm font-medium rounded bg-slate-100 hover:bg-slate-200">
           Muat ulang
         </button>
+      </div>
+      <div id="product-bar" class="feature-bar hidden items-center gap-3 mt-3">
+        <div class="w-full bg-gray-200 h-2 rounded overflow-hidden">
+          <div class="progress bg-indigo-600 h-2" style="width:0%"></div>
+        </div>
+        <div id="product-bar-text" class="text-xs text-gray-600">Siap</div>
       </div>
 
       <form id="form-add-product" class="grid md:grid-cols-4 gap-3 items-end">
@@ -142,8 +172,10 @@
       <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 mt-4"></div>
       <div id="product-error" class="text-sm text-red-600"></div> 
     </section>
+    </div>
 
     <!-- Transaksi -->
+    <div id="page-transactions" class="hidden">
     <section class="bg-white rounded-lg shadow p-6 space-y-4">
       <div class="flex items-center justify-between">
         <div>
@@ -151,6 +183,12 @@
           <p class="text-sm text-gray-600">Tambah item by SKU, hitung total via Transaction Service.</p>
         </div>
         <div class="text-sm text-gray-500" id="cart-count"></div>
+      </div>
+      <div id="transaction-bar" class="feature-bar hidden items-center gap-3 mt-3">
+        <div class="w-full bg-gray-200 h-2 rounded overflow-hidden">
+          <div class="progress bg-indigo-600 h-2" style="width:0%"></div>
+        </div>
+        <div id="transaction-bar-text" class="text-xs text-gray-600">Siap</div>
       </div>
 
       <div class="grid md:grid-cols-3 gap-3 items-end">
@@ -174,8 +212,10 @@
       <div id="cart-error" class="text-sm text-red-600"></div>
       <div id="cart-success" class="text-sm text-emerald-600"></div>
     </section>
+    </div>
 
     <!-- Dashboard sederhana (low stock) -->
+    <div id="page-dashboard" class="hidden">
     <section class="bg-white rounded-lg shadow p-6 space-y-3">
       <h2 class="text-xl font-semibold">Dashboard Stok Rendah</h2>
       <p class="text-sm text-gray-600">Menampilkan produk dengan stok &lt; 10 dari Product Service.</p>
@@ -184,6 +224,12 @@
           Muat ulang stok
         </button>
         <p class="text-xs text-gray-500 leading-tight max-w-xs">Klik untuk otomatis menambah stok (+50) pada produk dengan stok rendah (&lt;10).</p>
+      </div>
+      <div id="lowstock-bar" class="feature-bar hidden items-center gap-3 mt-3">
+        <div class="w-full bg-gray-200 h-2 rounded overflow-hidden">
+          <div class="progress bg-emerald-600 h-2" style="width:0%"></div>
+        </div>
+        <div id="lowstock-bar-text" class="text-xs text-gray-600">Siap</div>
       </div>
       <div id="lowstock-list" class="space-y-2"></div>
     </section>
@@ -197,8 +243,15 @@
         <button id="btn-load-dashboard" class="px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">Muat Dashboard</button>
         <div id="dashboard-summary" class="ml-4 text-sm"></div>
       </div>
+      <div id="dashboard-bar" class="feature-bar hidden items-center gap-3 mt-3">
+        <div class="w-full bg-gray-200 h-2 rounded overflow-hidden">
+          <div class="progress bg-indigo-600 h-2" style="width:0%"></div>
+        </div>
+        <div id="dashboard-bar-text" class="text-xs text-gray-600">Siap</div>
+      </div>
       <div id="dashboard-best-sellers" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
     </section>
+    </div>
 
   <script>
     // Use relative paths so the frontend can be served on :3000 and nginx will proxy / to the backend gateway
@@ -213,7 +266,36 @@
     // Small UI helpers
     const adminOnlyForm = document.getElementById('form-add-product').parentElement;
 
-    let products = [];
+    // Feature-specific loading/status bar helpers
+    function showFeatureBar(id, text = 'Memuat...') {
+      const bar = document.getElementById(id);
+      if (!bar) return;
+      const prog = bar.querySelector('.progress');
+      const textEl = document.getElementById(id + '-text');
+      if (textEl) textEl.textContent = text;
+      bar.classList.remove('hidden');
+      if (prog) {
+        prog.style.width = '30%';
+        prog.classList.add('indeterminate');
+      }
+    }
+    function hideFeatureBar(id, text) {
+      const bar = document.getElementById(id);
+      if (!bar) return;
+      const prog = bar.querySelector('.progress');
+      const textEl = document.getElementById(id + '-text');
+      if (prog) {
+        prog.classList.remove('indeterminate');
+        prog.style.width = '100%';
+      }
+      setTimeout(() => {
+        if (textEl && text !== undefined) textEl.textContent = text;
+        if (prog) prog.style.width = '0%';
+        bar.classList.add('hidden');
+      }, 300);
+    }
+
+    let products = []; 
     let cart = [];
 
     const productGrid = document.getElementById('product-grid');
@@ -231,6 +313,7 @@
 
     async function fetchProducts() {
       productError.textContent = '';
+      showFeatureBar('product-bar', 'Memuat produk...');
       try {
         const res = await fetch(PRODUCT_URL);
         if (!res.ok) throw new Error('Gagal mengambil data produk');
@@ -244,6 +327,8 @@
         renderProducts();
         renderSkuList();
         renderLowStock();
+      } finally {
+        hideFeatureBar('product-bar', 'Siap');
       }
     }
 
@@ -387,6 +472,7 @@
 
     // Dashboard summary: fetch and render summary from Dashboard Service via gateway
     async function fetchDashboardSummary() {
+      showFeatureBar('dashboard-bar','Memuat ringkasan...');
       try {
         const res = await fetch('/api/dashboard/summary');
         if (!res.ok) throw new Error('Gagal memuat ringkasan dashboard');
@@ -401,6 +487,8 @@
         }
       } catch (err) {
         showToast('Gagal memuat dashboard: ' + err.message, 'error');
+      } finally {
+        hideFeatureBar('dashboard-bar','Siap');
       }
     }
 
@@ -408,6 +496,7 @@
     // Add product (admin only)
     document.getElementById('form-add-product').addEventListener('submit', async (e) => {
       e.preventDefault();
+      showFeatureBar('product-bar','Menyimpan produk...');
       productError.textContent = '';
       document.getElementById('product-success').textContent = '';
       const submitBtn = document.getElementById('btn-add-product');
@@ -442,6 +531,7 @@
       } finally {
         submitBtn.removeAttribute('disabled');
         submitBtn.textContent = originalText;
+        hideFeatureBar('product-bar','Siap');
         setTimeout(() => document.getElementById('product-success').textContent = '', 4000);
       }
     });
@@ -470,6 +560,7 @@
       const orig = btn.textContent;
       btn.setAttribute('disabled', 'disabled');
       btn.textContent = 'Memuat ulang stok...';
+      showFeatureBar('lowstock-bar','Melakukan restock...');
       try {
         // Call restock endpoint to auto-add stock to low stock products
         const res = await fetch('/products/restock', { method: 'POST' });
@@ -492,6 +583,7 @@
       } finally {
         btn.removeAttribute('disabled');
         btn.textContent = orig;
+        hideFeatureBar('lowstock-bar','Siap');
       }
     });
 
@@ -515,6 +607,8 @@
         cart.push({ sku, quantity: qty });
       }
       renderCart();
+      showFeatureBar('transaction-bar','Item ditambahkan');
+      setTimeout(() => hideFeatureBar('transaction-bar','Siap'), 800);
     });
 
     function removeCartItem(sku) {
@@ -531,6 +625,7 @@
         cartError.textContent = 'Tambahkan item terlebih dahulu.';
         return;
       }
+      showFeatureBar('transaction-bar','Menghitung total...');
       try {
         const res = await fetch(TRANSACTION_URL, {
           method: 'POST',
@@ -551,6 +646,8 @@
         `;
       } catch (err) {
         cartError.textContent = err.message;
+      } finally {
+        hideFeatureBar('transaction-bar','Siap');
       }
     });
 
@@ -691,11 +788,49 @@
       }
     }
 
+    // Routing and page handling helpers
+    function showPage(page) {
+      const pages = ['products','transactions','dashboard'];
+      pages.forEach(p => {
+        const el = document.getElementById('page-' + p);
+        if (el) el.classList.toggle('hidden', p !== page);
+        const btn = document.getElementById('nav-' + p);
+        if (btn) {
+          btn.classList.toggle('bg-indigo-600', p === page);
+          btn.classList.toggle('text-white', p === page);
+          btn.classList.toggle('text-gray-700', p !== page);
+          btn.setAttribute('aria-current', p === page ? 'page' : 'false');
+        }
+      });
+      try { history.replaceState(null, '', '#' + page); } catch(e) { location.hash = page; }
+      // Trigger relevant page loads only when switching to that page
+      if (page === 'products') { fetchProducts(); }
+      if (page === 'dashboard') { fetchDashboardSummary(); }
+      // focus first input for convenience
+      setTimeout(() => {
+        if (page === 'products') document.querySelector('#form-add-product input[name="name"]')?.focus();
+        if (page === 'transactions') document.getElementById('input-sku')?.focus();
+      }, 80);
+    }
+    function initRouting() {
+      document.getElementById('nav-products').addEventListener('click', () => showPage('products'));
+      document.getElementById('nav-transactions').addEventListener('click', () => showPage('transactions'));
+      document.getElementById('nav-dashboard').addEventListener('click', () => showPage('dashboard'));
+      window.addEventListener('hashchange', () => {
+        const h = (location.hash || '#products').replace('#','') || 'products';
+        showPage(h);
+      });
+      const initial = (location.hash || '#products').replace('#','') || 'products';
+      showPage(initial);
+    }
+
     // Call checkHealth periodically and after product fetches
     updateAuthUI();
     fetchProducts().then(checkHealth).catch(checkHealth);
     renderCart();
     setInterval(checkHealth, 10000);
+    // Initialize routing after DOM ready (and after other initial calls)
+    initRouting();
   </script>
 </body>
 </html>
