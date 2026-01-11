@@ -24,7 +24,7 @@ app.get('/api/dashboard/summary', async (req, res) => {
         const transactions = transactionResponse.data;
 
         // 2. Melakukan perhitungan analitik
-        
+
         const totalRevenue = transactions.reduce((sum, t) => sum + t.totalAmount, 0);
         const totalTransactions = transactions.length;
 
@@ -44,12 +44,52 @@ app.get('/api/dashboard/summary', async (req, res) => {
             quantitySold: productSales[sku]
         })).sort((a, b) => b.quantitySold - a.quantitySold).slice(0, 5); // 5 produk terlaris
 
+        // --- Perhitungan Grafik Mingguan (7 Hari Terakhir) ---
+        const last7Days = [];
+        const chartData = [];
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+        // Generate 7 hari terakhir (dari hari ini ke belakang, lalu di-reverse agar urut waktu)
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            d.setHours(0, 0, 0, 0);
+            last7Days.push(d);
+        }
+
+        const dailyRevenueMap = {};
+
+        // Init map dengan 0
+        last7Days.forEach(date => {
+            const key = date.toISOString().split('T')[0];
+            dailyRevenueMap[key] = 0;
+        });
+
+        // Isi dengan data transaksi
+        transactions.forEach(t => {
+            const tDate = new Date(t.createdAt);
+            const key = tDate.toISOString().split('T')[0];
+            if (dailyRevenueMap.hasOwnProperty(key)) {
+                dailyRevenueMap[key] += t.totalAmount;
+            }
+        });
+
+        const chartLabels = last7Days.map(d => days[d.getDay()]);
+        const chartValues = last7Days.map(d => dailyRevenueMap[d.toISOString().split('T')[0]]);
+
+        const weeklyChart = {
+            labels: chartLabels,
+            data: chartValues
+        };
+
+
         // 3. Kirim hasil ringkasan
         res.json({
             status: 'ok',
             totalRevenue,
             totalTransactions,
             bestSellers,
+            weeklyChart,
             lastChecked: new Date().toISOString()
         });
 
